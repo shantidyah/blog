@@ -14,8 +14,8 @@ var firebase = require('firebase')
 
 
   function Add(){
+      // var username = 'setiaanggraeni'
     // var database = firebase.database()
-    // var username = 'setiaanggraeni'
     // var postsRef = database.ref('blog/blogs')
     // // var usersRef = postsRef.child('-LIVk3CDQHoV45NSIz-I/blogs')
     // var blogs = []

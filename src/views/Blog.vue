@@ -21,6 +21,8 @@ export default {
 <style>
   body{
     background-color:#e6eaf2;
+    background-image: url("https://shantidyahblog.wordpress.com/wp-content/themes/pub/pachyderm/img/background.png?m=1391151857h");
+
   }
  
 </style>

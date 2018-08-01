@@ -1,21 +1,30 @@
 <template>
       <div class="container">
-        <!-- {{details}} -->
+        {{details}}
           <div class="row">
-            <div class="col s3" style="background-color: black">
+            <div class="col s3" align="left">
+              <h5>Recent Posts</h5>
+               <ul v-for="content in contentBlog" :key='content[key]'>
+                  <li ><a href ='#' @click="detail(content.id)">
+                    <!-- <router-link to="/detail"> -->
+                      {{content.title}}
+                      <hr>
+                    <!-- </router-link> -->
+                  </a></li>
+              </ul>
             </div>
-            <div class="col s9" style="background-color: green">
+            <div class="col s9">
               <div class="card blue-grey darken-1" v-for="content in contentBlog" :key='content[key]'>
                 <!-- {{contentBlog}} -->
                 <div class="card-content white-text">
                   <span class="card-title">{{content.title}}</span>
-                  <p>{{content.content}}</p>
+                  <p align="justify" v-html="content.content"></p>
                 </div>
                 <div class="card-action">
                   <a @click="detail(content.id)">
-                  <router-link to="/detail">
+                  <!-- <router-link to="/detail"> -->
                     Read More
-                  </router-link>
+                  <!-- </router-link> -->
                   </a>
                 </div>
               </div>
@@ -26,15 +35,16 @@
 
 <style>
     .container{
-        background-color: red;
+        /* background-color: red; */
+        background-image: url("https://shantidyahblog.wordpress.com/wp-content/themes/pub/pachyderm/img/background.png?m=1391151857h");
         margin-top: 50px;
         margin-bottom: 50px;
     }
 </style>
 
 <script>
-import firebase from 'firebase'
 import { mapActions } from 'vuex'
+import db from '@/firebase/fb.js'
 
 export default {
   name: 'container',
@@ -45,16 +55,7 @@ export default {
     }
   },
   created(){
-    var config = {
-    apiKey: "AIzaSyDY5idbtw11RqyGmOwJ2ZBbuoXNSEIqU7o",
-    authDomain: "blog-9ae16.firebaseapp.com",
-    databaseURL: "https://blog-9ae16.firebaseio.com",
-    // projectId: "blog-9ae16",
-    storageBucket: ""
-    // messagingSenderId: "158136942127"
-    };
-  firebase.initializeApp(config),
-  this.listBlog()
+    this.listBlog()
 
   },
   methods: {
@@ -63,7 +64,7 @@ export default {
     ]),
     listBlog: function(){
       this.contentBlog = []
-      var ref = firebase.database().ref('blog/blogs')
+      var ref = db.ref('blog/blogs')
       const self = this
       ref.on('value',function(snapshot){
         var result = snapshot.val()
@@ -78,8 +79,11 @@ export default {
       })
     },
     detail: function(id){
-      this.details=id
-      this.getBlog(id)
+      localStorage.setItem('idComment',id)
+      var set = localStorage.getItem('id')
+      this.$router.replace(`/detail/${id}`)
+      // this.details=set
+      // this.getBlog(id)
       // console.log(id);
       
     }

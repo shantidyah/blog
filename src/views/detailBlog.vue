@@ -3,21 +3,21 @@
         <Navbar/>
         <div class="container">
         <!-- {{comments}} -->
-        {{test}}
+        <!-- {{test}} -->
           <div class="row">
-            <div class="col s3" style="background-color: black">
-            </div>
-            <div class="col s9" style="background-color: green">
+            <!-- <div class="col s3" style="background-color: black">
+            </div> -->
+            <div class="col s12">
               <div class="card blue-grey darken-1">
                 <!-- {{contentBlog}} -->
                 <div class="card-content white-text">
                   <span class="card-title">{{oneBlog.title}}</span>
-                  <p>{{oneBlog.content}}</p>
+                  <p align="justify" v-html="oneBlog.content"></p>
                 </div>
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 m12">
-                            <input id="icon_telephone" type="tel" class="validate" v-model="addComment"><label for="icon_telephone">email</label>
+                            <input type="text" v-model="addComment" placeholder="add comment here ...">
                             <input type="button" value="send" @click="send">
                             <div class="card blue darken-1" v-for="comment in comments" :key=comment[key]>
                                 <div class="card-content white-text">
@@ -39,8 +39,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import { mapActions } from 'vuex'
 import Navbar from '@/components/Navbar.vue'
-import firebase from 'firebase'
+import db from '@/firebase/fb.js'
 
 
 export default {
@@ -50,39 +51,48 @@ export default {
             comments:[],
             seen:false,
             addComment: '',
-            test:'test'
+            test:'test',
+            idComment: ''
         }
     },
     computed:{
         ...mapState({
-            oneBlog : 'oneBlog',
-            idComment : 'idComment'
+            oneBlog : 'oneBlog'
         })
     },
     created(){
+        this.detailContent()
         this.pushComment()
     },
     components:{
       Navbar
     },
     methods:{
+        ...mapActions([
+            'getBlog'
+        ]),
         send:function(){
             var self = this
             swal("Input your username:", {
                 content: "input",
             })
             .then((username) => {
-                var database = firebase.database()
-                var postsRef = database.ref(`blog/blogs/${self.idComment}/comments/${username}`)
-                postsRef.set({
-                    username:username,
-                    comment:self.addComment
-                })
-                self.addComment = ''
-                self.pushComment()
-                swal("Your comment successfully added!", {
-                    icon: "success",
-                });
+                if(username.length<1){
+                    alert("username must have minimal 6 characters")
+                }
+                else{
+                    // var database = firebase.database()
+                    var postsRef = db.ref(`blog/blogs/${self.idComment}/comments/${username}`)
+                    postsRef.set({
+                        username:username,
+                        comment:self.addComment
+                    })
+                    self.addComment = ''
+                    self.pushComment()
+                    swal("Your comment successfully added!", {
+                        icon: "success",
+                    });
+                }
             })
         },
         pushComment:function(){
@@ -92,8 +102,8 @@ export default {
             }
         },
         deleteComment: function(id){
-            var database = firebase.database()
-            var postsRef = database.ref(`blog/blogs/${this.idComment}/comments/${id}`)
+            // var database = firebase.database()
+            var postsRef = db.ref(`blog/blogs/${this.idComment}/comments/${id}`)
             // this.test = id
             var self = this
             postsRef.set({})
@@ -104,6 +114,11 @@ export default {
                 this.pushComment()
             });
             // swal("Good job!", "You clicked the button!", "success");
+        },
+        detailContent: function(){
+            var idComm = localStorage.getItem('idComment')
+            this.idComment = idComm
+            this.getBlog(idComm)
         }
     }
     
